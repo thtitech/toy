@@ -26,17 +26,52 @@ def preprocess(doc, debug=False):
         JanomeTokenizer(),
         [POSKeepFilter(['名詞', '形容詞', '副詞', '動詞']), ExtractAttributeFilter('base_form')])
     corpus = [' '.join(analyzer.analyze(l)) + '。' for l in lines]
-
     if debug:
         print("\n".join(corpus))
 
     return sentences, corpus
 
-def load_data(file_name):
+def load_data(file_name, cutoff=None):
     tmp = []
-    with open(file_name, "r") as f:
+    c = 0
+    with open(file_name, "r", encoding="utf-8") as f:
+        for line in f:
+            if cutoff is not None and c > cutoff:
+                break
+            tmp.append(line)
+            c += 1
+    return tmp
+
+def read_file(file_name):
+    tmp = []
+    with open(file_name, "r", encoding="utf-8") as f:
         for line in f:
             tmp.append(line)
     return "\n".join(tmp)
     
+def preprocess2(docs, debug=False):
+    docs = list(map(lambda d: list(filter(lambda x: x.strip() != "", re.split("\n|。", d.lower()))), docs))
+
+    sentences = copy.deepcopy(docs)
+
+    docs = [list(map(lambda x: mojimoji.zen_to_han(x), lines)) for lines in docs]
+
+    analyzer = Analyzer(
+        [UnicodeNormalizeCharFilter(), RegexReplaceCharFilter(r'[(\)､｡｢｣]', ' ')],
+        JanomeTokenizer(),
+        [POSKeepFilter(['名詞', '形容詞', '副詞', '動詞']), ExtractAttributeFilter('base_form')])
+
+    corpus = []
+    for lines in docs:
+        tmp = []
+        for line in lines:
+            words = analyzer.analyze(line)
+            for word in words:
+                tmp.append(word)
+        corpus.append(tmp)
+    #corpus = [[list(analyzer.analyze(l)) for l in lines] for lines in docs]
+
+    if debug:
+        print("\n".join(corpus))
     
+    return sentences, corpus
