@@ -63,12 +63,12 @@ def preprocess2(docs, debug=False):
 
     corpus = []
     for lines in docs:
-        tmp = []
         for line in lines:
+            tmp = []
             words = analyzer.analyze(line)
             for word in words:
                 tmp.append(word)
-        corpus.append(tmp)
+            corpus.append(tmp)
     #corpus = [[list(analyzer.analyze(l)) for l in lines] for lines in docs]
 
     if debug:

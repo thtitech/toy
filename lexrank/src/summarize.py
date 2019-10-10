@@ -27,7 +27,7 @@ def argmax(keys, f):
     return max(keys, key=f)
 
 def convert_to_sparse_vector(sent_vecs, dim):
-    array = np.zeros(dim)
+    array = np.zeros(dim, dtype="float32")
     for index, count in sent_vecs:
         array[index] = count
     return array
@@ -35,8 +35,9 @@ def convert_to_sparse_vector(sent_vecs, dim):
 def lexrank(sent_vecs, dim, alpha=0.85, max_iter=100000):
     sent_vecs = np.array([convert_to_sparse_vector(sent_vec, dim) for sent_vec in sent_vecs])
 
-    #print(sent_vecs)
+    print(sent_vecs)
     sim_mat = cosine_similarity(sent_vecs)
+    print(sim_mat)
     linked_rows, linked_cols = np.where(sim_mat > 0)
 
     graph = networkx.DiGraph()

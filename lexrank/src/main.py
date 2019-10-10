@@ -5,6 +5,7 @@ from sumy.summarizers.lex_rank import LexRankSummarizer
 from preprocessing import *
 from tfidf import *
 from summarize import *
+import numpy
 
 def main(debug=False):
     file_name = "../data/report.txt"
@@ -18,18 +19,20 @@ def main(debug=False):
         print(sentences[corpus.index(sentence.__str__())])
 
 def main2(debug=False):
+    """
     docs = load_data("../data/database.txt")
     sentences, corpus = preprocess2(docs)
 
     if debug:
         print("finish loading corpus")
 
+
     tfidf = TfidfModel()
     model, dictionary = tfidf.generate(corpus)
 
     dictionary.save_as_text("../data/dict.txt")
     model.save("../data/model.model")
-
+    """
     dictionary = gensim.corpora.Dictionary.load_from_text("../data/dict.txt")
     model = gensim.models.TfidfModel.load("../data/model.model")
     
@@ -38,11 +41,13 @@ def main2(debug=False):
     
     target = read_file("../data/report.txt")
     target_sent, target_corpus = preprocess2([target])
-
+    
     if debug:
         print("finish loading target doc")
 
     print(len(target_corpus[0]), len(target_sent[0]))
+    print(target_corpus[0])
+    
     indexs = summarize(
         [line.split(" ") for line in target_corpus[0]], model, dictionary,
         sent_limit=10
@@ -53,5 +58,6 @@ def main2(debug=False):
     print("\n".join([target_sent[0][i] for i in sorted(list(indexs))]))
     
 if __name__ == "__main__":
+    numpy.set_printoptions(numpy.inf)
     main2(debug=True)
 
